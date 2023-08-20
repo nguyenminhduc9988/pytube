@@ -17,7 +17,7 @@ from pytube.helpers import install_proxy
 from pytube.innertube import InnerTube
 from pytube.metadata import YouTubeMetadata
 from pytube.monostate import Monostate
-
+from pytube.innertube import _default_clients
 logger = logging.getLogger(__name__)
 
 
@@ -248,22 +248,26 @@ class YouTube:
         return self._vid_info
 
     def bypass_age_gate(self):
-        """Attempt to update the vid_info by bypassing the age gate."""
-        innertube = InnerTube(
-            client='ANDROID',
-            use_oauth=self.use_oauth,
-            allow_cache=self.allow_oauth_cache
-        )
-        innertube_response = innertube.player(self.video_id)
+        for client_type in _default_clients.keys():
+            """Attempt to update the vid_info by bypassing the age gate."""
+            innertube = InnerTube(
+                client=client_type,
+                use_oauth=self.use_oauth,
+                allow_cache=self.allow_oauth_cache
+            )
+            innertube_response = innertube.player(self.video_id)
 
-        playability_status = innertube_response['playabilityStatus'].get('status', None)
+            playability_status = innertube_response['playabilityStatus'].get('status', None)
 
-        # If we still can't access the video, raise an exception
-        # (tier 3 age restriction)
-        if playability_status == 'UNPLAYABLE':
-            raise exceptions.AgeRestrictedError(self.video_id)
-
-        self._vid_info = innertube_response
+            # If we still can't access the video, raise an exception
+            # (tier 3 age restriction)
+            if playability_status == 'UNPLAYABLE':
+                continue
+            
+            self._vid_info = innertube_response
+            return
+        logger.error(f"still age restricted, tried all default clients {_default_clients.keys()}")
+        raise exceptions.AgeRestrictedError(self.video_id)
 
     @property
     def caption_tracks(self) -> List[pytube.Caption]:
