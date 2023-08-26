@@ -248,7 +248,13 @@ class YouTube:
         return self._vid_info
 
     def bypass_age_gate(self):
-        for client_type in _default_clients.keys():
+        clients_to_try = ['WEB',
+            'ANDROID',
+            'IOS',
+            'WEB_EMBED',
+            'ANDROID_EMBED',
+            'IOS_EMBED']
+        for client_type in clients_to_try:
             """Attempt to update the vid_info by bypassing the age gate."""
             innertube = InnerTube(
                 client=client_type,
