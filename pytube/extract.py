@@ -420,7 +420,7 @@ def apply_signature(stream_manifest: Dict, vid_info: Dict, js: str) -> None:
                 raise LiveStreamError("UNKNOWN")
         # 403 Forbidden fix.
         if "signature" in url or (
-            "s" not in stream and ("&sig=" in url or "&lsig=" in url)
+            "s" not in stream and ("&signature=" in url or "&lsignature=" in url)
         ):
             # For certain videos, YouTube will just provide them pre-signed, in
             # which case there's no real magic to download them and we can skip
