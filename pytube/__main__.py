@@ -253,7 +253,8 @@ class YouTube:
             'IOS_EMBED',
             'ANDROID',
             'IOS',
-            'WEB','WEB_EMBED']
+            'WEB',
+            'WEB_EMBED']
         for client_type in clients_to_try:
             """Attempt to update the vid_info by bypassing the age gate."""
             innertube = InnerTube(
